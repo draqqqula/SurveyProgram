@@ -24,6 +24,7 @@ class Survey
         {
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine($"Question { counter }/{ Questions.Length }, {mistakes.Count} mistakes");
+            question.ShuffleAnswers();
             var result = Ask(question);
             if (!result)
             {
@@ -44,7 +45,7 @@ class Survey
         {
             counter++;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"{counter}) {answer};");
+            Console.WriteLine($"{counter}) {answer}");
         }
         var input = Console.ReadLine();
         var number = Convert.ToInt32(Regex.Match(input, @"\d+").Value);
@@ -66,8 +67,8 @@ class Survey
 class QuestionInfo
 {
     public required string Question { get; init; }
-    public required string[] Answers { get; init; }
-    public required int[] Solution { get; init; }
+    public required string[] Answers { get; set; }
+    public required int[] Solution { get; set; }
 
     public static QuestionInfo FromRegex(Match match)
     {
@@ -82,6 +83,16 @@ class QuestionInfo
             Solution = solution,
             Answers = answers.ToArray(),
         };
+    }
+
+    public void ShuffleAnswers()
+    {
+        var order = Enumerable.Range(0, Answers.Length).ToArray();
+        Random.Shared.Shuffle(order);
+        var newSolution = Solution.Select(number => Array.IndexOf(order, number - 1) + 1).OrderBy(it => it).ToArray();
+        var newAnswers = order.Select(index => Answers[index]).ToArray();
+        Answers = newAnswers;
+        Solution = newSolution;
     }
 
     private static string TrimTags(string input)
