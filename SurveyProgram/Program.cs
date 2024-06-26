@@ -19,13 +19,17 @@ class Survey
         }
         var mistakes = new List<QuestionInfo>();
         Random.Shared.Shuffle(Questions);
+        var counter = 1;
         foreach (var question in Questions)
         {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"Question { counter }/{ Questions.Length }, {mistakes.Count} mistakes");
             var result = Ask(question);
             if (!result)
             {
                 mistakes.Add(question);
             }
+            counter++;
         }
         Console.WriteLine($"Survey finished, {Questions.Length - mistakes.Count}/{Questions.Length}.");
         Start(mistakes.ToArray());
